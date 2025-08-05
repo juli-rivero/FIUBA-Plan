@@ -23,6 +23,12 @@ import { getColor, stateReducer } from "../utils";
 
 const INICIALES_SEMANA = ["D", "L", "M", "X", "J", "V", "S"];
 
+const COLOR_MODALIDAD = {
+  "-": "",
+  V: "blue",
+  P: "orange",
+};
+
 const SelectCurso = ({ codigo }) => {
   const { toggleCurso, events, toggleMateria, getters } =
     React.useContext(DataContext);
@@ -197,18 +203,40 @@ const SelectCurso = ({ codigo }) => {
                   {isActive && <CheckIcon mr={1} />}
                   {isItemBlocked && <WarningTwoIcon mr={1} />}
                   {item.docentes}
-                  <Badge
-                    fontSize="x-small"
-                    position="absolute"
-                    bottom="2px"
-                    right="0"
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "2px",
+                      right: "0",
+                      display: "flex",
+                      gap: 4,
+                    }}
                   >
-                    {[
-                      ...new Set(
-                        item.clases.map((clase) => INICIALES_SEMANA[clase.dia]),
-                      ),
-                    ].join(" | ")}
-                  </Badge>
+                    {(() => {
+                      const usados = new Set();
+                      const diasClases = [];
+                      item.clases.forEach(({ dia, modalidad }) => {
+                        const inicial = INICIALES_SEMANA[dia];
+                        if (!usados.has(inicial)) {
+                          usados.add(inicial);
+                          diasClases.push(
+                            <Badge
+                              fontSize="x-small"
+                              key={item.codigo + dia}
+                              colorScheme={COLOR_MODALIDAD[modalidad]}
+                              variant="outline"
+                              style={{
+                                backdropFilter: "blur(5px)",
+                              }}
+                            >
+                              {inicial}
+                            </Badge>,
+                          );
+                        }
+                      });
+                      return diasClases;
+                    })()}
+                  </div>
                 </li>
               </Box>
             </Tooltip>

@@ -60,12 +60,16 @@ export function parseSIU(rawdata) {
           }
 
           // eslint-disable-next-line no-unused-vars
-          const [_tipo, dia, horario, _aula = null] = claseLine.split("\t");
+          const [_tipo, dia, horario, aula = null] = claseLine.split("\t");
+          const modalidad = aula.includes("Aula a determinar") ? "-" : 
+                            (aula.includes("Virtual") ? "V" : "P");
           const [inicio, fin] = horario.split(" a ");
           const clase = {
             dia: SEMANA.indexOf(dia),
             inicio,
             fin,
+            aula,
+            modalidad,
           };
           clases.push(clase);
         }
